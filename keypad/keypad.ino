@@ -1,5 +1,6 @@
 #include "Keypad.h"
 #include "std_functions.h"
+#include "blinker.h"
 #include <EEPROM.h>
 
 const byte ROWS = 4; //four rows
@@ -42,7 +43,7 @@ byte rowPins[ROWS] = {21, 19, 18, 5};
 byte colPins[COLS] = {23, 22, 3};
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
-
+Blinker blinker = Blinker(greenLed, redLed, yellowLed);
 void setup() {
   serialSetUp();
   EEPROM.begin(arraySize * 4);
@@ -89,7 +90,9 @@ void loop() {
     {
       handleKeyPress(key);
     }
-  }  
+  }
+
+    blinker.Update();
 }
 
 // 
@@ -120,8 +123,9 @@ void handleLearningButtonPress()
     Serial.println("start learning mode!");
     cancelLearningMode(); // just to reset stuff
     learningMode = true;   
-    blink(yellowStatusPins, 300, 5, yellowStatusPinsCount);
-    setAllTo(yellowStatusPins, HIGH, yellowStatusPinsCount);    
+    blinker.AddBlinkToYellow(5);
+    //blink(yellowStatusPins, 300, 5, yellowStatusPinsCount);
+    //todo: setAllTo(yellowStatusPins, HIGH, yellowStatusPinsCount);    
   }
 }
 
@@ -152,7 +156,8 @@ void learningModeHandleKeyPress(char key)
           // error - they didn't enter enough numbers
           Serial.println("not enough numbers. error.");
           Serial.println(setPosition);
-          blink(allStatusPins, 300, 5, allStatusPinsCount);
+          blinker.AddBlinkToAll(5);
+          //blink(allStatusPins, 300, 5, allStatusPinsCount);
           cancelLearningMode();
         }       
       }// use std
@@ -168,14 +173,16 @@ void learningModeHandleKeyPress(char key)
         if(match)
         {
           Serial.println("compare is good");
-          blink(greenLed, 300, 5);
+          blinker.AddBlinkToGreen(5);
+          //blink(greenLed, 300, 5);
           setPassCodeInEeprom(newAttempt2PassCode);
           getPassCodeFromEeprom();
         }
         else
         {
           Serial.println("compare is bad");
-          blink(redLed, 300, 5);
+          blinker.AddBlinkToRed(5);
+          //blink(redLed, 300, 5);
         }
 
         cancelLearningMode();
@@ -247,7 +254,8 @@ void handleKeyPress(char key)
       Serial.print(key);
       Serial.print(" to position ");
       Serial.println(setPosition);
-      blink(greenLed, 300, 1);
+      blinker.AddBlinkToRed(1);
+      //blink(greenLed, 300, 1);
       newPassCode[setPosition] = keyAsInt;
       keyPosition++;
     }
@@ -265,13 +273,15 @@ bool checkPassCode()
   {
      Serial.println("Passcode matches");
      resetDataEntry();
-     blink(greenLed, 300, 5);
+     blinker.AddBlinkToGreen(5);
+     //blink(greenLed, 300, 5);
   }
   else
   {
     Serial.println("Passcode does not match");
     resetDataEntry();
-    blink(redLed, 300, 5);
+    blinker.AddBlinkToRed(5);
+    //blink(redLed, 300, 5);
   }
 
   return match;
@@ -284,8 +294,9 @@ void openDoor(int relayPin)
   Serial.print("Opening door on relay: ");
   Serial.println(relayPin);
 
-  // blink all f the lights while this is happening
-  blink(allStatusPins, 250, 10, allStatusPinsCount);
+  // blink all of the lights while this is happening
+  blinker.AddBlinkToAll(10);
+  //blink(allStatusPins, 250, 10, allStatusPinsCount);
 
   // close it
   digitalWrite(relayPin, LOW);
