@@ -32,9 +32,15 @@ LedStatus::LedStatus(int pin){
 
   void LedStatus::ClearCount(){
     Count = 0;
-    }
+    LastBlink = 0;
+    Status = LOW;
+    digitalWrite(Pin, Status); 
+  }
   void LedStatus::SetCount(int count){
     Count = count *2;
+    LastBlink = 0;
+    Status = LOW;
+    digitalWrite(Pin, Status); 
 
     Serial.print("SetCount: ");
     Serial.print(Count);
