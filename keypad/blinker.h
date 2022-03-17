@@ -19,6 +19,12 @@ private:
   LedStatus *GreenLed;
   LedStatus *RedLed;
   LedStatus *YellowLed;
+
+  bool NeedToBlink();
+  void SetAllToStatus();
+  unsigned long LastBlink=0;
+  unsigned long BlinkRate=300;
+  int Status;
 };
 
 #endif
