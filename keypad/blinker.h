@@ -9,12 +9,13 @@
 //
 class Blinker {
 public:
-  Blinker(int greenPin, int redPin, int yellowPin);
+  Blinker(int greenPin, int redPin, int yellowPin, int secondYellowLed);
   void Update();
   void AddBlinkToGreen(int count);
   void AddBlinkToRed(int count);
   void AddBlinkToYellow(int count);
   void AddBlinkToAll(int count);
+  bool LearningMode;
 private:
   LedStatus *GreenLed;
   LedStatus *RedLed;
@@ -25,6 +26,7 @@ private:
   unsigned long LastBlink=0;
   unsigned long BlinkRate=300;
   int Status;
+  int SecondYellowLed;
 };
 
 #endif

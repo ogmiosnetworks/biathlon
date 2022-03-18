@@ -43,7 +43,7 @@ byte rowPins[ROWS] = {21, 19, 18, 5};
 byte colPins[COLS] = {23, 22, 3};
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
-Blinker blinker = Blinker(greenLed, redLed, yellowLed);
+Blinker blinker = Blinker(greenLed, redLed, yellowLed, secondYellowLed);
 void setup() {
   serialSetUp();
   EEPROM.begin(arraySize * 4);
@@ -53,8 +53,9 @@ void setup() {
   initOutputPin(greenLed);
   initOutputPin(yellowLed);
   initOutputPin(secondYellowLed);
-  initOutputPin(relay_1);
-  initOutputPin(relay_2);
+  initOutputPin(relay_1, HIGH);
+  initOutputPin(relay_2, HIGH);
+    
   pinMode(buttonPin, INPUT);
   
   //newPassCode[0] = newPassCode[1] = newPassCode[2] = newPassCode[3] = 9;
@@ -123,9 +124,8 @@ void handleLearningButtonPress()
     Serial.println("start learning mode!");
     cancelLearningMode(); // just to reset stuff
     learningMode = true;   
-    blinker.AddBlinkToYellow(5);
-    //blink(yellowStatusPins, 300, 5, yellowStatusPinsCount);
-    //todo: setAllTo(yellowStatusPins, HIGH, yellowStatusPinsCount);    
+    blinker.LearningMode = true;
+    blinker.AddBlinkToYellow(5);   
   }
 }
 
@@ -219,9 +219,10 @@ void cancelLearningMode()
   setAllTo(allStatusPins, LOW, allStatusPinsCount); 
 
   // reset all of the flags
-  learningMode = false;
+  blinker.LearningMode = learningMode = false;
   keyPosition = 0;
   useStdPassCode = true;
+  buttonStartPress = 0;
 
   // reset the input arrays
   newPassCode[0] = newPassCode[1] = newPassCode[2] = newPassCode[3] = 0;
@@ -290,17 +291,17 @@ bool checkPassCode()
 void openDoor(int relayPin)
 {
   // keep it opwn for 20 seconds
-  digitalWrite(relayPin, HIGH);
+  digitalWrite(relayPin, LOW);
   Serial.print("Opening door on relay: ");
   Serial.println(relayPin);
 
   // blink all of the lights while this is happening
   blinker.AddBlinkToAll(10);
-  //blink(allStatusPins, 250, 10, allStatusPinsCount);
 
+  delay(5000);
   // close it
-  digitalWrite(relayPin, LOW);
-  Serial.print("done with relay: ");
+  digitalWrite(relayPin, HIGH);
+  Serial.print("closing door on relay: ");
   Serial.println(relayPin);
 }
 

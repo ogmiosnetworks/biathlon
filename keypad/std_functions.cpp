@@ -14,11 +14,17 @@ void serialSetUp(){
     Serial.println("Setup is complete");
  }
 
+  void initOutputPin(int pinId, int initStatus){
+    pinMode(pinId, OUTPUT);
+    digitalWrite(pinId, initStatus);
+ }
+
  void initOutputPin(int pinId)
  {
-    pinMode(pinId, OUTPUT);
-    digitalWrite(pinId, LOW);
+    initOutputPin(pinId, LOW);    
  }
+
+
 
 // set al set of pins to a particular state
 void setAllTo(const int pins[],int status, int arraySize)

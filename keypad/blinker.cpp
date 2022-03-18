@@ -2,12 +2,14 @@
 #include "blinker.h"
 #include "ledStatus.h"
 
-  Blinker::Blinker(int greenPin, int redPin, int yellowPin){
+  Blinker::Blinker(int greenPin, int redPin, int yellowPin, int secondYellowLed){
     GreenLed = new LedStatus(greenPin);
     RedLed = new LedStatus(redPin);
     YellowLed = new LedStatus(yellowPin);
     Status = LOW;
     SetAllToStatus();   
+    LearningMode = false;
+    SecondYellowLed = secondYellowLed;
   }
   void  Blinker::Update(){
     unsigned long syncTo = millis();
@@ -28,6 +30,7 @@
       if(0 < YellowLed->Count){
         YellowLed->Count--;
         digitalWrite(YellowLed->Pin, Status);  
+        digitalWrite(SecondYellowLed, Status);
       }
       
       LastBlink = syncTo;
@@ -42,9 +45,18 @@
       if(0 == RedLed->Count && HIGH == digitalRead(RedLed->Pin)){        
         digitalWrite(RedLed->Pin, LOW);  
       }
-      if(0 == YellowLed->Count && HIGH == digitalRead(YellowLed->Pin)){        
-        digitalWrite(YellowLed->Pin, LOW);  
+
+      if(LearningMode && LOW == digitalRead(YellowLed->Pin))
+      {
+         digitalWrite(YellowLed->Pin, HIGH);  
+         digitalWrite(SecondYellowLed, HIGH);
       }
+      else if(!LearningMode && 0 == YellowLed->Count && HIGH == digitalRead(YellowLed->Pin))
+      {        
+        digitalWrite(YellowLed->Pin, LOW);  
+        digitalWrite(SecondYellowLed, LOW);
+      }
+      
      }
   }
   void  Blinker::SetAllToStatus(){

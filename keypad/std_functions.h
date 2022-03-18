@@ -3,6 +3,7 @@
 
 void serialSetUp();
 void initOutputPin(int pinId);
+void initOutputPin(int pinId, int initStatus);
 void setupComplete();
 void writeIntArrayIntoEEPROM(int address, int numbers[], int arraySize);
 int readIntArrayFromEEPROM(int address, int numbers[], int arraySize);
