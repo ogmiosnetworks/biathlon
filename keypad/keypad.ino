@@ -20,8 +20,7 @@ const int yellowLed = 4;
 const int secondYellowLed = 25;
 const int allStatusPinsCount = 4;
 const int allStatusPins[allStatusPinsCount] = {redLed, greenLed, yellowLed, secondYellowLed};
-const int yellowStatusPinsCount = 2;
-const int yellowStatusPins[yellowStatusPinsCount] = {yellowLed, secondYellowLed};
+
 const int buttonPin = 34;
 const int relay_1 = 32;
 const int relay_2 = 33;
@@ -44,6 +43,7 @@ byte colPins[COLS] = {23, 22, 3};
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 Blinker blinker = Blinker(greenLed, redLed, yellowLed, secondYellowLed);
+
 void setup() {
   serialSetUp();
   EEPROM.begin(arraySize * 4);
@@ -75,7 +75,7 @@ void loop() {
   char key = keypad.getKey();
 
   // every 30 seconds just reset the whole data entry setup
-  if(30000 <  millis() - lastKeyPress)
+  if(30000 <  (millis() - lastKeyPress))
   {
     resetDataEntry();
   }
@@ -157,7 +157,6 @@ void learningModeHandleKeyPress(char key)
           Serial.println("not enough numbers. error.");
           Serial.println(setPosition);
           blinker.AddBlinkToAll(5);
-          //blink(allStatusPins, 300, 5, allStatusPinsCount);
           cancelLearningMode();
         }       
       }// use std
@@ -288,6 +287,7 @@ bool checkPassCode()
   return match;
 }
 
+// open a garage door
 void openDoor(int relayPin)
 {
   // keep it opwn for 20 seconds
@@ -298,7 +298,9 @@ void openDoor(int relayPin)
   // blink all of the lights while this is happening
   blinker.AddBlinkToAll(10);
 
+  // not worth making this one non-blocking
   delay(5000);
+  
   // close it
   digitalWrite(relayPin, HIGH);
   Serial.print("closing door on relay: ");

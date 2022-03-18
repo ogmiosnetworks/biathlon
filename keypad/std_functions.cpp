@@ -1,30 +1,33 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 
+// setup the serial output 
 void serialSetUp(){
     Serial.begin(9600);
     delay(1000);
     while(!Serial) { } // wait for the serial to initialize
     Serial.println("");
- }
- 
- void setupComplete()
- {
+}
+
+// display the setup complete message
+void setupComplete()
+{
     Serial.println("");
     Serial.println("Setup is complete");
- }
+}
 
-  void initOutputPin(int pinId, int initStatus){
+// configure an output pin
+void initOutputPin(int pinId, int initStatus)
+{
     pinMode(pinId, OUTPUT);
     digitalWrite(pinId, initStatus);
- }
+}
 
- void initOutputPin(int pinId)
- {
+// configure an output pin
+void initOutputPin(int pinId)
+{
     initOutputPin(pinId, LOW);    
- }
-
-
+}
 
 // set al set of pins to a particular state
 void setAllTo(const int pins[],int status, int arraySize)
