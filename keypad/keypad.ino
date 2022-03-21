@@ -221,7 +221,7 @@ void cancelLearningMode()
   blinker.LearningMode = learningMode = false;
   keyPosition = 0;
   useStdPassCode = true;
-  buttonStartPress = 0;
+  
 
   // reset the input arrays
   newPassCode[0] = newPassCode[1] = newPassCode[2] = newPassCode[3] = 0;
